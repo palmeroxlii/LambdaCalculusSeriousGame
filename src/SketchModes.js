@@ -22,15 +22,14 @@ class Title extends Mode {
 
     this.quiz_header = new Header(60, "QUIZ MODE", 40);
     this.questions = [];
-    this.question_data = [];
-    for (let i = 0; i < 45; ++i) {
+    for (let i = 0; i < question_data.length; ++i) {
       let num = i+1;
       let x = floor(i/3)%5;
       let y = i%3;
       this.questions[i] = new Button(250+150*x, 150+150*y, 100, 100,"Q"+num
-        +(num===11||num===19|num===20?"":"\n(dummy)"), 20);
-      this.question_data[i] = num===11?q_ex1:num===19?q_ex2:num===20?q_ex3:null;
+        +(question_data[i].text === "(dummy)"?"\n(dummy)":""), 20);
     }
+    this.max_page = ceil(question_data.length/15)-1;
     this.question_next = new Button(1000, 300, 100, 100, ">", 40);
     this.question_prev = new Button(100, 300, 100, 100, "<", 40);
   }
@@ -47,39 +46,25 @@ class Title extends Mode {
       this.sandbox.display();
       this.quiz.display();
     } else {
-      // On a quiz page.
+      // On a question selection page.
       this.quiz_header.display();
-      if (this.page !== 2) this.question_next.display();
+      if (this.page !== this.max_page) this.question_next.display();
       if (this.page !== 0) this.question_prev.display();
       for (let i = this.page*15; i < (this.page+1)*15; ++i) {
-        this.questions[i].display();
+        if (i < this.questions.length) this.questions[i].display();
       }
-
     }
   }
 
   execute() {
-    // Reset all buttons.
-    this.sandbox.noHover();
-    this.quiz.noHover();
-    this.quiz_header.back.noHover();
-    this.question_next.noHover();
-    this.question_prev.noHover();
-    for (let question of this.questions) {
-      question.noHover();
-    }
-    if (this.page === -1) {
-      // On the main title screen.
-      this.sandbox.checkHover();
-      this.quiz.checkHover();
-    } else {
-      // On a quiz page.
-      this.quiz_header.back.checkHover();
-      if (this.page !== 2) this.question_next.checkHover();
-      if (this.page !== 0) this.question_prev.checkHover();
-      for (let i = this.page*15; i < (this.page+1)*15; ++i) {
-        this.questions[i].checkHover();
-      }
+    this.sandbox.checkHover(this.page === -1);
+    this.quiz.checkHover(this.page === -1);
+    this.quiz_header.back.checkHover(this.page !== -1);
+    this.question_next.checkHover(this.page !== -1 && this.page !== this.max_page);
+    this.question_prev.checkHover(this.page !== -1 && this.page !== 0);
+    for (let i = 0; i < this.questions.length; ++i) {
+      let enable_hover = (this.page !== -1 && floor(i/15) === this.page);
+      if (i < this.questions.length) this.questions[i].checkHover(enable_hover);
     }
   }
 
@@ -91,11 +76,11 @@ class Title extends Mode {
     } else {
       // On a quiz page.
       if (this.quiz_header.back.highlighted) this.page = -1;
-      else if (this.question_next.highlighted && this.page !== 2) ++this.page;
+      else if (this.question_next.highlighted && this.page !== this.max_page) ++this.page;
       else if (this.question_prev.highlighted && this.page !== 0) --this.page;
       else {
         for (let i = this.page*15; i < (this.page+1)*15; ++i) {
-          if (this.questions[i].highlighted && this.question_data[i] !== null) mode = new QuizQuestion(this.question_data[i]);
+          if (i < this.questions.length && this.questions[i].highlighted) mode = new QuizQuestion(question_data[i]);
         }
       }
     }
@@ -120,20 +105,14 @@ class ModeWithCanvas extends Mode {
     header.display();
     if (canvas.dragged !== null) canvas.dragged.display();
     if (popup === null) header.tooltip();
-    else {
-      // Darken the rest of the screen, and draw the popup on top.
-      noStroke();
-      fill(0, 204);
-      rect(0, 0, 1200, 600);
-      popup.display();
-    }
+    else popup.displayStart();
   }
 
   execute() {
     canvas.updateHover();
     palette.selectBlock();
-    header.buttonHover(header.back);
-    header.buttonHover(header.topright_button);
+    header.back.checkHover(popup === null);
+    header.topright.checkHover(popup === null);
     if (popup !== null) popup.execute();
   }
 
@@ -141,8 +120,7 @@ class ModeWithCanvas extends Mode {
     if (popup === null) {
       switch (keyCode) {
         case DELETE:
-          if (canvas.dragged !== null) canvas.dragged = null;
-          else if (canvas.hover_data[0] !== null) canvas.removeBlock();
+          canvas.deleteKey();
           break;
       }
     } else popup.keyPressed();
@@ -151,35 +129,16 @@ class ModeWithCanvas extends Mode {
   mousePressed() {
     if (popup === null) {
       if (canvas.dragged === null) {
-        if (mouse.y >= palette.ypos) {
-          if (palette.selected !== -1) {
-            canvas.dragged = palette.createBlock();
-            canvas.dragged.dragStart();
-          } else if (palette.change_var.highlighted) popup = new TextEditor(0);
-          else if (palette.change_macro.highlighted) popup = new TextEditor(5);
-        } else if (mouse.y > header.ypos) {
-          if (canvas.hover_data[0] !== null) canvas.dragBlock();
-        }
+        if (mouse.y >= palette.ypos) palette.mousePressed();
+        else if (mouse.y > header.ypos) canvas.mousePressed();
       }
       if (header.back.highlighted) mode = new Title();
-      if (header.topright_button.highlighted) this.toprightButtonPress();
+      if (header.topright.highlighted) this.toprightButtonPress();
     } else popup.mousePressed();
   }
 
   mouseReleased() {
-    if (popup === null) {
-      if (canvas.dragged !== null) {
-        if (mouse.y > header.ypos && mouse.y < palette.ypos) {
-          if (canvas.hover_data[0] !== null) {
-            canvas.hover_data[1].slots[canvas.hover_data[2]] = canvas.dragged;
-            canvas.hover_data[0].updateBlock();
-          } else {
-            canvas.blocks.push(canvas.dragged);
-          }
-        }
-        canvas.dragged = null;
-      }
-    }
+    if (popup === null) canvas.mouseReleased();
   }
 
   toprightButtonPress() {}
@@ -203,10 +162,10 @@ class QuizQuestion extends ModeWithCanvas {
   constructor(question) {
     super(new HeaderWithCanvas(60, question.text, 30, "Submit\nAnswer", 20));
     this.marking = question.marking;
-    // Add in the ANS macro definition, as well as (depending on the question):
+    // Add in the ANS macro definition,
     let ans = new MacroDef(525, 275);
     ans.slots[0] = new MacroUse(0, 0, "ANS");
-    // a default answer,
+    //  as well as (depending on the question) a default answer,
     if (question.ans !== null) ans.slots[1] = this.block_construct(question.ans);
     ans.updateBlock();
     canvas.blocks.push(ans);

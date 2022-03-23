@@ -8,11 +8,6 @@ class Header {
     this.back = new Button(0, 0, this.ypos, this.ypos, "←", this.size);
   }
 
-  buttonHover(button) {
-    if (popup === null) button.checkHover();
-    else button.noHover();
-  }
-
   display() {
     noStroke();
     fill("White");
@@ -33,12 +28,12 @@ class HeaderWithCanvas extends Header {
 
   constructor(y, text, size, topright_text, topright_size) {
     super(y, text, size);
-    this.topright_button = new Button(1200-this.ypos*2, 0, this.ypos*2, this.ypos, topright_text, topright_size);
+    this.topright = new Button(1200-this.ypos*2, 0, this.ypos*2, this.ypos, topright_text, topright_size);
   }
 
   display() {
     super.display();
-    this.topright_button.displayEmbedded();
+    this.topright.displayEmbedded();
   }
 
   tooltip() {
@@ -60,16 +55,16 @@ class HeaderWithCanvas extends Header {
   tooltipGet() {
     // The block that is currently being dragged.
     if (canvas.dragged !== null) return canvas.dragged.toString();
-    // The block on the canvas that is currently hovered over.
+    // The block that is currently hovered over.
     if (canvas.hover_data[0] !== null) {
       if (canvas.hover_data[1] === null) return canvas.hover_data[0].toString();
       else return canvas.hover_data[1].slots[canvas.hover_data[2]].toString();
     }
-    // The option on the palette that is currently hovered over.
+    // The palette option that is currently hovered over.
     if (palette.selected !== -1) return palette.examples[palette.selected].toString();
     // The button that is currently hovered over.
     if (this.back.highlighted) return "Back";
-    if (this.topright_button.highlighted) return this.topright_button.text.replace("\n", " ");
+    if (this.topright.highlighted) return this.topright.text.replace("\n", " ");
     if (palette.change_var.highlighted) return "Change Variable";
     if (palette.change_macro.highlighted) return "Change Macro";
     // No tooltip.
@@ -131,41 +126,36 @@ class Canvas {
     }
   }
 
+  deleteKey() {
+    if (this.dragged !== null) this.dragged = null;
+    else if (this.hover_data[0] !== null) this.removeBlock();
+  }
+
   display() {
     for (let block of this.blocks) {
       block.display();
     }
   }
 
-  dragBlock() {
+  mousePressed() {
+    if (this.hover_data[0] !== null) {
       this.dragged = key_shift?this.copyBlock():this.removeBlock();
       this.dragged.removeHighlight();
       this.dragged.dragStart();
+    }
   }
 
-  /* This returns an array of 3 elements:
-   * [0] - The expanded term, or as far as the program could go if not fully expanded.
-   * [1] - Whether or not the term was fully expanded.
-   * [2] - The feedback message to display if the term was not fully expanded. */
-  expandTerm(term, used_macros) {
-    let newterm = term.copyBlock();
-    if (term instanceof MacroUse) {
-      if (used_macros.includes(term.text)) return [newterm, false, "The "+term.text+" macro includes a circular reference."]
-      let def = this.searchMacro(term.text);
-      if (def.length === 0) return [newterm, false, "The "+term.text+" macro has not been defined."];
-      if (def.length > 1) return [newterm, false, "The "+term.text+" macro has been defined\nin multiple different places."];
-      return this.expandTerm(def[0], used_macros.concat([term.text]));
-    } else {
-      let correct = true, message = "";
-      for (let i = (term instanceof MacroDef?1:0); i < newterm.slots.length; ++i) {
-        let newslot = this.expandTerm(newterm.slots[i], used_macros);
-        newterm.slots[i] = newslot[0]
-        if (!newslot[1]) {
-          correct = false;
-          message = newslot[2];
+  mouseReleased() {
+    if (this.dragged !== null) {
+      if (mouse.y > header.ypos && mouse.y < palette.ypos) {
+        if (this.hover_data[0] !== null) {
+          this.hover_data[1].slots[this.hover_data[2]] = this.dragged;
+          this.hover_data[0].updateBlock();
+        } else {
+          this.blocks.push(this.dragged);
         }
       }
-      return [newterm, correct, message];
+      this.dragged = null;
     }
   }
 
@@ -179,7 +169,7 @@ class Canvas {
     } else {
       // Removing a block from a slot in another block.
       block = this.hover_data[1].slots[this.hover_data[2]];
-      this.hover_data[1].emptySlot(this.hover_data[2]);
+      this.hover_data[1].removeSlot(this.hover_data[2]);
       this.hover_data[0].updateBlock();
     }
     return block;
@@ -272,17 +262,20 @@ class Palette {
     this.change_macro.displayEmbedded();
   }
 
+  mousePressed() {
+    if (this.selected !== -1) {
+      canvas.dragged = this.createBlock();
+      canvas.dragged.dragStart();
+    } else if (this.change_var.highlighted) popup = new TextEditor(0);
+    else if (this.change_macro.highlighted) popup = new TextEditor(5);
+  }
+
   selectBlock() {
-    if (popup !== null) {
-      this.change_var.noHover();
-      this.change_macro.noHover();
-      this.selected = -1;
-    } else {
-      this.change_var.checkHover();
-      this.change_macro.checkHover();
-      if (mouse.y < this.ypos || this.change_var.highlighted || this.change_macro.highlighted) this.selected = -1;
-      else this.selected = constrain(floor(mouse.x/this.block_size.x), 0, this.length-1);
-    }
+    this.change_var.checkHover(popup === null);
+    this.change_macro.checkHover(popup === null);
+    if (popup !== null || mouse.y < this.ypos
+      || this.change_var.highlighted || this.change_macro.highlighted) this.selected = -1;
+    else this.selected = constrain(floor(mouse.x/this.block_size.x), 0, this.length-1);
   }
 
 }

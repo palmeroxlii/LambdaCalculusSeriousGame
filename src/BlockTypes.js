@@ -9,10 +9,6 @@ class EmptySlot extends Block {
     return new EmptySlot(this.pos.x, this.pos.y, [this.displayShape, this.type]);
   }
 
-  toString() {
-    return "#";
-  }
-
   updateSize() {
     this.size.set(30, 30);
   }
@@ -37,10 +33,6 @@ class TermVar extends Block {
     text(this.text, this.pos.x+this.size.x/2, this.pos.y+this.size.y/2);
   }
 
-  toString() {
-    return this.text;
-  }
-
   updateSize() {
     textSize(30);
     this.size.set(max(40, textWidth(this.text)+15), 40);
@@ -52,7 +44,7 @@ class TermVar extends Block {
 class TermAbs extends Block {
 
   constructor(x, y) {
-    super(x, y, "", col_abs, displayHexagonNormal, 2, [bp_var, bp_term]);
+    super(x, y, "", col_abs, displayHexagonNormal, 2, [slot_var, slot_term]);
   }
 
   copy() {
@@ -96,7 +88,7 @@ class TermAbs extends Block {
 class TermApp extends Block {
 
   constructor(x, y) {
-    super(x, y, "", col_app, displayHexagonNormal, 2, [bp_term, bp_term]);
+    super(x, y, "", col_app, displayHexagonNormal, 2, [slot_term, slot_term]);
   }
 
   toString() {
@@ -162,7 +154,7 @@ class TermAppV extends TermApp {
 class MacroDef extends Block {
 
   constructor(x, y) {
-    super(x, y, "", col_macro, displayRectangle, 0, [bp_macro, bp_term]);
+    super(x, y, "", col_macro, displayRectangle, 0, [slot_macro, slot_term]);
   }
 
   copy() {
@@ -210,10 +202,6 @@ class MacroUse extends Block {
     fill("Black");
     textSize(30);
     text(this.text, this.pos.x+this.size.x/2, this.pos.y+this.size.y/2);
-  }
-
-  toString() {
-    return this.text;
   }
 
   updateSize() {

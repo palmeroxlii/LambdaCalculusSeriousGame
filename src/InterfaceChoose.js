@@ -54,20 +54,14 @@ class ApplyChooseBlock {
   }
 
   execute() {
-    // Reset all buttons.
-    this.next.noHover();
-    this.prev.noHover();
-    for (let page of this.pages) {
-      for (let block of page) {
-        block[1].noHover();
+    this.next.checkHover(this.current_page !== this.max_page);
+    this.prev.checkHover(this.current_page !== 0);
+    for (let i = 0; i < this.pages.length; ++i) {
+      let enable_hover = (i === this.current_page);
+      for (let block of this.pages[i]) {
+        block[1].checkHover(enable_hover);
       }
     }
-    // Update just the current page.
-    for (let block of this.pages[this.current_page]) {
-      block[1].checkHover();
-    }
-    if (this.current_page !== this.max_page) this.next.checkHover();
-    if (this.current_page !== 0) this.prev.checkHover();
   }
 
   mousePressed() {
@@ -130,20 +124,14 @@ class ApplyChooseAlg {
   }
 
   execute() {
-    // Reset all buttons.
-    this.next.noHover();
-    this.prev.noHover();
-    for (let page of this.pages) {
-      for (let alg of page) {
-        alg[1].noHover();
+    this.next.checkHover(this.current_page !== this.max_page);
+    this.prev.checkHover(this.current_page !== 0);
+    for (let i = 0; i < this.pages.length; ++i) {
+      let enable_hover = (i === this.current_page);
+      for (let alg of this.pages[i]) {
+        alg[1].checkHover(enable_hover);
       }
     }
-    // Update just the current page.
-    for (let alg of this.pages[this.current_page]) {
-      alg[1].checkHover();
-    }
-    if (this.current_page !== this.max_page) this.next.checkHover();
-    if (this.current_page !== 0) this.prev.checkHover();
   }
 
   mousePressed() {

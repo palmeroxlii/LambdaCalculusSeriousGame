@@ -12,7 +12,6 @@ function displayRounded(e) {
 }
 const displayRoundedNormal = displayRounded(10);
 const displayRoundedSmall = displayRounded(5);
-
 function displayHexagon(e) {
   return function(x, y, w, h) {
     beginShape();
@@ -27,7 +26,6 @@ function displayHexagon(e) {
 }
 const displayHexagonNormal = displayHexagon(10);
 const displayHexagonSmall = displayHexagon(5);
-
 function displayRectangle(x, y, w, h) {
   rect(x, y, w, h);
 }
@@ -39,10 +37,10 @@ const col_abs = "YellowGreen";
 const col_app = "SkyBlue";
 const col_macro = "HotPink";
 
-// Blueprints for slots that hold: only variables, all terms, only macros.
-const bp_var = [displayRoundedSmall, 1];
-const bp_term = [displayHexagonSmall, 7];
-const bp_macro = [displayRectangle, 4];
+// Blueprints for slots that hold respectively: only variables, all terms, only macros.
+const slot_var = [displayRoundedSmall, 1];
+const slot_term = [displayHexagonSmall, 7];
+const slot_macro = [displayRectangle, 4];
 
 // This is the base class for all types of blocks, and should not be instantiated directly.
 class Block {
@@ -70,14 +68,19 @@ class Block {
     this.updateBlock();
   }
 
+  checkCollision(point) {
+    return point.x >= this.pos.x && point.x <= this.pos.x+this.size.x
+      && point.y >= this.pos.y && point.y <= this.pos.y+this.size.y;
+  }
+
   /* When called on a block from the canvas directly, this function returns the following cases:
    * [null, null, 0] if the block is not hovered over at all.
    * [this, null, 0] if the block itself is hovered over.
    * [this, this, i] if the i'th direct child of the block is hovered over.
-   * [this, prnt, i] if a distant child of the block (the i'th child of prnt) is hovered over.
+   * [this, prnt, i] if an indirect child of the block (the i'th direct child of prnt) is hovered over.
    */
   checkHover(point, consider_empties) {
-    if (this.collisionCheck(point)) {
+    if (this.checkCollision(point)) {
       if (!key_ctrl) {
         // This block is hovered over, but I might actually be hovering over a child block.
         // Note that I may or may not want to consider empty slots depending on the task.
@@ -105,11 +108,6 @@ class Block {
     }
   }
 
-  collisionCheck(point) {
-    return point.x >= this.pos.x && point.x <= this.pos.x+this.size.x
-      && point.y >= this.pos.y && point.y <= this.pos.y+this.size.y;
-  }
-
   copyBlock() {
     let tmp = this.copy();
     for (let i = 0; i < this.slots.length; ++i) {
@@ -121,7 +119,7 @@ class Block {
 
   display() {
     strokeWeight(2);
-    stroke(this.highlighted||canvas.dragged===this?"White":"Black"); //abs(sin(frameCount*2))*255
+    stroke(this.highlighted||canvas.dragged===this?"White":"Black");
     fill(this.col);
     this.displayShape(this.pos.x, this.pos.y, this.size.x, this.size.y);
     this.displayExtra();
@@ -144,8 +142,41 @@ class Block {
     }
   }
 
-  emptySlot(i) {
-    this.slots[i] = new EmptySlot(0, 0, this.slot_blueprints[i]);
+  /* This returns an array of 3 elements:
+   * [0] - The expanded term, or as far as it could go if not fully expanded.
+   * [1] - Whether or not the term was fully expanded.
+   * [2] - The feedback message to display if the term was not fully expanded. */
+  expandMacros(used_macros = []) {
+    let newterm = this.copyBlock();
+    if (this instanceof MacroUse) {
+      let macro = this.text;
+      if (used_macros.includes(macro)) return [newterm, false, "The "+macro+" macro includes a circular reference."]
+      let def = canvas.searchMacro(macro);
+      if (def.length === 0) return [newterm, false, "The "+macro+" macro has not been defined."];
+      if (def.length > 1) return [newterm, false, "The "+macro+" macro has been defined\nin multiple different places."];
+      return def[0].expandMacros(used_macros.concat([macro]));
+    } else {
+      let correct = true, message = "";
+      for (let i = (this instanceof MacroDef?1:0); i < newterm.slots.length; ++i) {
+        let newslot = newterm.slots[i].expandMacros(used_macros);
+        newterm.slots[i] = newslot[0]
+        if (!newslot[1]) {
+          correct = false;
+          message = newslot[2];
+        }
+      }
+      return [newterm, correct, message];
+    }
+  }
+
+  isMatchExact(model) {
+    // The block and the contents of its slots must be of the same type.
+    if (!(this instanceof model[0])) return false;
+    for (let i = 0; i < this.slots.length; ++i) {
+      if (!this.slots[i].isMatchExact(model[i+1])) return false;
+    }
+    // For variables and macro instances, they must also have the same name.
+    return (!(this instanceof TermVar || this instanceof MacroUse) || this.text === model[1]);
   }
 
   removeHighlight(){
@@ -153,6 +184,10 @@ class Block {
     for (let slot of this.slots) {
       slot.removeHighlight();
     }
+  }
+
+  removeSlot(i) {
+    this.slots[i] = new EmptySlot(0, 0, this.slot_blueprints[i]);
   }
 
   updateBlock() {
@@ -174,11 +209,18 @@ class Block {
     this.updateSize();
   }
 
-  // These functions should be overwritten by the subclass as needed.
+  // These functions in particular should be overwritten by the subclass as needed.
+
   copy() {}
+
   displayExtra() {}
-  toString() {}
+
+  toString() {
+    return this.text;
+  }
+
   updatePos() {}
+
   updateSize() {}
 
 }

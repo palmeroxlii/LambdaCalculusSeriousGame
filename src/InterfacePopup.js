@@ -2,6 +2,14 @@ class Popup {
 
   constructor() {}
 
+  displayStart() {
+    // Darken the rest of the screen, and draw the popup on top.
+    noStroke();
+    fill(0, 204);
+    rect(0, 0, 1200, 600);
+    this.display();
+  }
+
   display() {}
   execute() {}
   keyPressed() {}
@@ -95,8 +103,8 @@ class SubmitAnswer extends Popup {
     this.lower_pos = createVector(600, this.pos.y+this.size.y-size3.y/2);
 
     // The back button.
-    this.back = new Button(header.topright_button.pos.x, header.topright_button.pos.y,
-      header.topright_button.size.x, header.topright_button.size.y, this.correct?"Next":"Back", header.topright_button.text_size);
+    this.back = new Button(header.topright.pos.x, header.topright.pos.y,
+      header.topright.size.x, header.topright.size.y, this.correct?"Next":"Back", header.topright.text_size);
   }
 
   display() {
@@ -114,7 +122,7 @@ class SubmitAnswer extends Popup {
   }
 
   execute() {
-    this.back.checkHover();
+    this.back.checkHover(true);
   }
 
   /* This returns an array of 3 elements:
@@ -122,7 +130,7 @@ class SubmitAnswer extends Popup {
    * [1] - Whether or not the answer is correct.
    * [2] - The feedback message to display if the answer is incorrect. */
   getAnswer() {
-    let ans = canvas.expandTerm(new MacroUse(0, 0, "ANS"), []);
+    let ans = (new MacroUse(0, 0, "ANS")).expandMacros();
     if (ans[1]) return mode.marking(ans[0]);
     else return ans;
   }
@@ -142,7 +150,7 @@ class ApplyAlgorithm extends Popup {
 
   constructor() {
     super();
-    this.header = new HeaderWithCanvas(header.ypos, "Choose a block", header.size, "Back", header.topright_button.text_size);
+    this.header = new HeaderWithCanvas(header.ypos, "Choose a block", header.size, "Back", header.topright.text_size);
     this.header.back.pos.set(-100, -100);
 
     if (canvas.blocks.length !== 0) {
@@ -174,9 +182,9 @@ class ApplyAlgorithm extends Popup {
     if (canvas.blocks.length !== 0) {
       if (this.block === null) this.choose_block.execute();
       else if (this.alg === null) this.choose_alg.execute();
-      else this.confirm.checkHover();
+      else this.confirm.checkHover(true);
     }
-    this.header.topright_button.checkHover();
+    this.header.topright.checkHover(true);
   }
 
   makeConfirmPage() {
@@ -196,7 +204,7 @@ class ApplyAlgorithm extends Popup {
       else if (this.alg === null) this.choose_alg.mousePressed();
       else if (this.confirm.highlighted) popup = new AlgorithmDisplay(this.block, this.alg[0]);
     }
-    if (this.header.topright_button.highlighted) popup = null;
+    if (this.header.topright.highlighted) popup = null;
   }
 
 }
@@ -209,7 +217,7 @@ class AlgorithmDisplay extends Popup {
     this.current_slide = 0;
     this.max_slide = this.slides.length-1;
 
-    this.header = new HeaderWithCanvas(header.ypos, "Slide 1 of "+this.slides.length, header.size, "Back", header.topright_button.text_size);
+    this.header = new HeaderWithCanvas(header.ypos, "Slide 1 of "+this.slides.length, header.size, "Back", header.topright.text_size);
     this.header.back.pos.set(-100, -100);
 
     for (let slide of this.slides) {
@@ -240,18 +248,16 @@ class AlgorithmDisplay extends Popup {
   }
 
   execute() {
-    this.header.topright_button.checkHover();
-    if (this.current_slide !== this.max_slide) this.next.checkHover();
-    else this.next.noHover();
-    if (this.current_slide !== 0) this.prev.checkHover();
-    else this.prev.noHover();
+    this.header.topright.checkHover(true);
+    this.next.checkHover(this.current_slide !== this.max_slide);
+    this.prev.checkHover(this.current_slide !== 0);
   }
 
   mousePressed() {
     if (this.next.highlighted && this.current_slide !== this.max_slide) ++this.current_slide;
     if (this.prev.highlighted && this.current_slide !== 0) --this.current_slide;
     this.header.text = "Slide "+(this.current_slide+1)+" of "+(this.max_slide+1);
-    if (this.header.topright_button.highlighted) popup = null;
+    if (this.header.topright.highlighted) popup = null;
   }
 
 }

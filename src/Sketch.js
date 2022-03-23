@@ -57,13 +57,13 @@ class Button {
     this.highlighted = false;
   }
 
-  checkHover() {
-    this.highlighted = this.collisionCheck(mouse);
-  }
-
-  collisionCheck(point) {
+  checkCollision(point) {
     return point.x >= this.pos.x && point.x <= this.pos.x+this.size.x
       && point.y >= this.pos.y && point.y <= this.pos.y+this.size.y;
+  }
+
+  checkHover(enabled) {
+    this.highlighted = enabled && this.checkCollision(mouse);
   }
 
   // This is the default display function, mainly for the title screen.
@@ -97,10 +97,6 @@ class Button {
     if (this.pos.x+this.size.x !== 1200) line(this.pos.x+this.size.x, this.pos.y, this.pos.x+this.size.x, this.pos.y+this.size.y);
     if (this.pos.y+this.size.y !== 600)line(this.pos.x+this.size.x, this.pos.y+this.size.y, this.pos.x, this.pos.y+this.size.y);
     if (this.pos.x !== 0) line(this.pos.x, this.pos.y+this.size.y, this.pos.x, this.pos.y);
-  }
-
-  noHover() {
-    this.highlighted = false;
   }
 
 }

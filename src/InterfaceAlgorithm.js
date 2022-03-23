@@ -19,7 +19,7 @@ function macroExpand(term, slides) {
   let macro_count = macroCheck(term instanceof MacroDef?term.slots[1]:term);
   if (macro_count !== 0) {
     slides.push([term, "Start by expanding any macros."]);
-    let expanded = canvas.expandTerm(term, []);
+    let expanded = term.expandMacros();
     slides.push([expanded[0],
       expanded[1]?"Any macros are now expanded.":expanded[2].replace("\n", " ")]);
     return [expanded[0], expanded[1]];
