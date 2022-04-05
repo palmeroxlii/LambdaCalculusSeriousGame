@@ -172,7 +172,7 @@ class ApplyAlgorithm extends Popup {
         noStroke();
         fill("Black");
         textSize(25);
-        text(this.alg[1], this.text_pos.x, this.text_pos.y);
+        text(this.alg[0], this.text_pos.x, this.text_pos.y);
       }
     }
     this.header.display();
@@ -188,7 +188,7 @@ class ApplyAlgorithm extends Popup {
   }
 
   makeConfirmPage() {
-    let text_size = getTextSize(this.alg[1])
+    let text_size = getTextSize(this.alg[0])
     let size = createVector(max(this.block.size.x, text_size.x)+10,
       this.block.size.y+text_size.y+10);
     let pos = createVector(600-size.x/2, 300+(header.ypos-size.y)/2);
@@ -202,7 +202,7 @@ class ApplyAlgorithm extends Popup {
     if (canvas.blocks.length !== 0) {
       if (this.block === null) this.choose_block.mousePressed();
       else if (this.alg === null) this.choose_alg.mousePressed();
-      else if (this.confirm.highlighted) popup = new AlgorithmDisplay(this.block, this.alg[0]);
+      else if (this.confirm.highlighted) popup = new AlgorithmDisplay(this.block, this.alg);
     }
     if (this.header.topright.highlighted) {
       if (this.block === null) popup = null;

@@ -1,8 +1,8 @@
 class AlgorithmDisplay extends Popup {
 
-  constructor(term, alg_index) {
+  constructor(term, alg) {
     super();
-    this.slides = applyToTerm(term, algorithms[alg_index]);
+    this.slides = applyToTerm(term, alg);
     this.current_slide = 0;
     this.max_slide = this.slides.length-1;
 

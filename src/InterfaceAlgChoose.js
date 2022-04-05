@@ -80,19 +80,17 @@ class ApplyChooseBlock {
 class ApplyChooseAlg {
 
   constructor() {
-    let algs = [" Beta reduction \n Normal-order strategy ",
-      " Beta reduction \n Applicative-order strategy "]
     this.next = new Button(1000, 300, 100, 100, ">", 40);
     this.prev = new Button(100, 300, 100, 100, "<", 40);
     // Divide the algorithms into pages, such that each page fits within the screen.
     this.current_page = 0;
     this.pages = [];
     let size_tmp = createVector(0, 0), page_tmp = [];
-    for (let i = 0; i < algs.length; ++i) {
-      let alg = algs[i];
-      let alg_size = getTextSize(alg);
+    for (let i = 0; i < algorithm_spec.length; ++i) {
+      let alg = algorithm_spec[i];
+      let alg_size = getTextSize(alg[0]);
       if (size_tmp.y+alg_size.y+10 > 600-header.ypos-10) this.createPage(size_tmp, page_tmp);
-      page_tmp.push([i, alg]);
+      page_tmp.push(alg);
       size_tmp.set(max(size_tmp.x, alg_size.x+10), size_tmp.y+alg_size.y+10);
     }
     if (page_tmp.length !== 0) this.createPage(size_tmp, page_tmp);
@@ -104,13 +102,13 @@ class ApplyChooseAlg {
     let pos = createVector(600-size_tmp.x/2, 300+(header.ypos-size_tmp.y)/2);
     let page = [];
     for (let alg of page_tmp) {
-      let alg_size = getTextSize(alg[1]);
-      let button = new Button(pos.x, pos.y, size_tmp.x, alg_size.y+10, alg[1], 25);
+      let alg_size = getTextSize(alg[0]);
+      let button = new Button(pos.x, pos.y, size_tmp.x, alg_size.y+10, alg[0], 25);
       pos.y += alg_size.y+10;
-      page.push([alg[0], button]);
+      page.push([alg, button]);
     }
     this.pages.push(page);
-    // Clear the current page, ready for the next page.
+    // Flush the current page, ready for the next page.
     size_tmp.set(0, 0);
     page_tmp.length = 0;
   }
@@ -137,7 +135,7 @@ class ApplyChooseAlg {
   mousePressed() {
     for (let alg of this.pages[this.current_page]) {
       if (alg[1].highlighted) {
-        popup.alg = [alg[0], alg[1].text];
+        popup.alg = alg[0];
         popup.header.text = "Confirm choice";
         popup.makeConfirmPage();
       }

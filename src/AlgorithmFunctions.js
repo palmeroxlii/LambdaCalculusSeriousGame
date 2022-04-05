@@ -1,5 +1,8 @@
-let algorithms = [[betaNorm, "Beta-reducing the term using the normal-order (leftmost-outermost) strategy."],
-                  [betaAppl, "Beta-reducing the term using the applicative-order (leftmost-innermost) strategy."]];
+let algorithm_spec = [
+  [" Beta reduction \n Normal-order strategy ", noPrecomp, betaNorm,
+  "Beta-reducing the term using the normal-order (leftmost-outermost) strategy."],
+  [" Beta reduction \n Applicative-order strategy ", noPrecomp, betaAppl,
+  "Beta-reducing the term using the applicative-order (leftmost-innermost) strategy."]];
 
 // Some general functions shared by the algorithms.
 
@@ -139,9 +142,9 @@ function renameVars(term_old, term_new, rename_from, rename_active, rename_to) {
 // The entry point for running the algorithms.
 function applyToTerm(term, alg) {
   let slides = [];
-  slides.push([term.copyBlock(), alg[1]]);
+  slides.push([term.copyBlock(), alg[3]]);
   let expanded = macroExpand(term, slides);
-  if (expanded[1]) alg[0](expanded[0], slides);
+  if (expanded[1]) alg[2](expanded[0], slides);
   return slides;
 }
 
@@ -218,6 +221,9 @@ function betaReduce(term, slides, strategy) {
   slides.push([term.copyBlock(),
     "The term has been reduced 10 times without stopping. For the sake of safety, the algorithm will be halted here."]);
   return slides;
+}
+
+function noPrecomp(term, slides) {
 }
 
 function betaNorm(term, slides) {
