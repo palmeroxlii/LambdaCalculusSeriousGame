@@ -67,7 +67,7 @@ class ApplyChooseBlock {
   mousePressed() {
     for (let block of this.pages[this.current_page]) {
       if (block[1].highlighted) {
-        popup.block = block[0];
+        popup.block = block[0].copyBlock();
         popup.header.text = "Choose an algorithm";
       }
     }
