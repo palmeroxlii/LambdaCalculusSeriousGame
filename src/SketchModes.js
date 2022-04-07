@@ -26,8 +26,7 @@ class Title extends Mode {
       let num = i+1;
       let x = floor(i/3)%5;
       let y = i%3;
-      this.questions[i] = new Button(250+150*x, 150+150*y, 100, 100,"Q"+num
-        +(question_data[i].text === "(dummy)"?"\n(dummy)":""), 20);
+      this.questions[i] = new Button(250+150*x, 150+150*y, 100, 100, "Q"+num, 30);
     }
     this.max_page = ceil(question_data.length/15)-1;
     this.question_next = new Button(1000, 300, 100, 100, ">", 40);
@@ -80,7 +79,7 @@ class Title extends Mode {
       else if (this.question_prev.highlighted && this.page !== 0) --this.page;
       else {
         for (let i = this.page*15; i < (this.page+1)*15; ++i) {
-          if (i < this.questions.length && this.questions[i].highlighted) mode = new QuizQuestion(question_data[i]);
+          if (i < this.questions.length && this.questions[i].highlighted) mode = new QuizQuestion(i);
         }
       }
     }
@@ -159,8 +158,10 @@ class Sandbox extends ModeWithCanvas {
 
 class QuizQuestion extends ModeWithCanvas {
 
-  constructor(question) {
-    super(new HeaderWithCanvas(60, question.text, 30, "Submit\nAnswer", 20));
+  constructor(num) {
+    let question = question_data[num];
+    super(new HeaderWithCanvas(60, "Q"+(num+1)+": "+question.text, 30, "Submit\nAnswer", 20));
+    this.question_num = num;
     this.marking = question.marking;
     // Add in the ANS macro definition,
     let ans = new MacroDef(525, 275);
@@ -198,6 +199,11 @@ class QuizQuestion extends ModeWithCanvas {
         break;
     }
     return block;
+  }
+
+  mousePressed() {
+    super.mousePressed();
+    if (mode instanceof Title) mode.page = floor(this.question_num/15);
   }
 
   toprightButtonPress() {

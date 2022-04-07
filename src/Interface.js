@@ -5,7 +5,7 @@ class Header {
     this.ypos = y;
     this.text = text;
     this.size = size;
-    this.back = new Button(0, 0, this.ypos, this.ypos, "←", this.size);
+    this.back = new Button(0, 0, this.ypos, this.ypos, "←", 40);
   }
 
   display() {

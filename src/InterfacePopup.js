@@ -52,13 +52,13 @@ class TextEditor extends Popup {
   keyPressed() {
     // Confirm the name and return to the main game.
     if (keyCode === ENTER || keyCode === RETURN) {
-      if (this.text !== "") {
-        this.block.text = this.text;
+      if (this.text.trim() !== "") {
+        this.block.text = this.text.trim();
         palette.centraliseBlock(this.index);
       }
       popup = null;
-    // Type the name.
-    } else if (keyCode >= 48 && keyCode <= 57) this.text += String.fromCharCode(keyCode);
+    } // Type the name.
+    else if ((keyCode >= 48 && keyCode <= 57) || (keyCode === 32 && !this.type)) this.text += String.fromCharCode(keyCode);
     else if (keyCode >= 65 && keyCode <= 90) this.text += String.fromCharCode(keyCode+(this.type?32:0));
     else if (keyCode === BACKSPACE && this.text !== "") this.text = this.text.substring(0, this.text.length - 1);
   }
@@ -84,8 +84,19 @@ class SubmitAnswer extends Popup {
     let size1 = createVector(textWidth(this.upper_text), text_height);
 
     // The text at the bottom of the popup.
-    this.lower_text = this.correct?"Congratulations!\nPress \"Next\" to move on."
-      :submit[2]+"\n\nPress \"Back\" to try again.";
+    let back_text;
+    if (this.correct) {
+      if (mode.question_num+1 === question_data.length || section_enders.indexOf(mode.question_num) >= 0) {
+        this.lower_text = "Congratulations!\nPress \"Return\" to go back to\nthe question selection screen.";
+        back_text = "Return";
+      } else {
+        this.lower_text = "Congratulations!\nPress \"Next\" to move on.";
+        back_text = "Next";
+      }
+    } else {
+      this.lower_text = submit[2]+"\n\nPress \"Back\" to try again.";
+      back_text = "Back";
+    }
     this.lower_text = " "+this.lower_text.replaceAll("\n", " \n ")+" ";
     let lines = this.lower_text.split("\n");
     let line_width = 0;
@@ -104,7 +115,7 @@ class SubmitAnswer extends Popup {
 
     // The back button.
     this.back = new Button(header.topright.pos.x, header.topright.pos.y,
-      header.topright.size.x, header.topright.size.y, this.correct?"Next":"Back", header.topright.text_size);
+      header.topright.size.x, header.topright.size.y, back_text, header.topright.text_size);
   }
 
   display() {
@@ -128,18 +139,24 @@ class SubmitAnswer extends Popup {
   /* This returns an array of 3 elements:
    * [0] - The submitted answer.
    * [1] - Whether or not the answer is correct.
-   * [2] - The feedback message to display if the answer is incorrect. */
+   * [2] - The feedback message to display if the answer is incorrect.
+   * The mode.marking function returns "" to show that the answer is correct,
+   * or the feedback message if the answer is incorrect. */
   getAnswer() {
     let ans = (new MacroUse(0, 0, "ANS")).expandMacros();
-    if (ans[1]) return mode.marking(ans[0]);
+    if (ans[1]) {
+      let result = mode.marking(ans[0]);
+      return [ans[0], result === "", result];
+    }
     else return ans;
   }
 
   mousePressed() {
     if (this.back.highlighted) {
       if (this.correct) {
-        mode = new Title();
-        mode.page = 0;
+        if (mode.question_num+1 === question_data.length
+          || section_enders.indexOf(mode.question_num) >= 0) mode = new Title();
+        else mode = new QuizQuestion(mode.question_num+1);
       } else popup = null;
     }
   }

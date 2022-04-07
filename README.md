@@ -16,10 +16,14 @@ In addition, this mode allows you to apply the beta-reduction algorithm (using e
 
 ## Playing the game - Quiz mode
 
-This mode allows you to test your knowledge of lambda calculus by answering several questions. Use the arrows on the sides to scroll through the questions, and select a question (currently, only Q11, Q19 and Q20 have been created). Work out the answer, and then assign it to the ANS macro. When you submit an answer, the game will check whether it is correct; if your answer is incorrect, then the game will attempt to provide helpful feedback (e.g. if it can spot what mistake you made).
+This mode allows you to test your knowledge of lambda calculus by answering several questions. Use the arrows on the sides to scroll through the questions, and select a question to attempt. Work out the answer, and then assign it to the ANS macro. When you submit an answer, the game will check whether it is correct; if your answer is incorrect, then the game will attempt to provide helpful feedback (e.g. if it can spot what mistake you made).
 
 ## Keyboard controls
-The majority of the game is played using just the mouse. However, renaming variables and macros is done by typing the name (note that only letters and numbers are accepted). In addition, there are some more advanced controls that are available with a keyboard:
+The majority of the game is played using just the mouse. However, renaming variables and macros is done by typing the name with a keyboard:
+- Only numbers and lower-case letters are accepted for variables.
+- Only numbers, spaces and upper-case letters are accepted for macros.
+
+In addition, there are some more advanced controls that are assigned to keys:
 - Control - Changes which block or slot is highlighted:
   - When multiple blocks are overlapping, by default the highest block is highlighted. Use Control to highlight the lowest block instead.
   - When highlighting a child block within a parent block, by default the child block is highlighted. Use Control to highlight the parent block instead.
