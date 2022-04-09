@@ -117,6 +117,17 @@ class Block {
     return tmp;
   }
 
+  countSubterms(model) {
+    if (this.isMatchExact(model)) return 1;
+    else {
+      let count = 0;
+      for (let slot of this.slots) {
+        count += slot.countSubterms(model);
+      }
+      return count;
+    }
+  }
+
   display() {
     strokeWeight(2);
     stroke(this.highlighted||canvas.dragged===this?"White":"Black");
@@ -169,6 +180,38 @@ class Block {
     }
   }
 
+  isMatchAlpha(model, renamings, model_vars = [], term_vars = []) {
+    // The block must be of the same type.
+    if (!(this instanceof model[0])) return false;
+    // If it's an alpha abstraction for a non-empty variable, then update the renamings.
+    if (this instanceof TermAbs && this.slots[0] instanceof TermVar) {
+      renamings[model[1][1]] = this.slots[0].text;
+      let index = term_vars.indexOf(this.slots[0].text);
+      if (index === -1) {
+        // Add a new renaming.
+        model_vars.push(model[1][1]);
+        term_vars.push(this.slots[0].text);
+      } else {
+        // Replace the existing renaming (i.e. variable shadowing).
+        model_vars[index] = model[1][1];
+        term_vars[index] = this.slots[0].text;
+      }
+    }
+    // The contents of its slots must be of the same type.
+    // (Note that each recursive call takes its own copy of the vars arrays, to avoid interference.)
+    for (let i = 0; i < this.slots.length; ++i) {
+      if (!this.slots[i].isMatchAlpha(model[i+1], renamings, model_vars.slice(), term_vars.slice())) return false;
+    }
+    // For macro instances, they must also have the same name.
+    if (this instanceof MacroUse) return this.text === model[1];
+    // For variable instances, they must match the current renaming if one exists, or otherwise have the same name.
+    if (this instanceof TermVar) {
+      let index = term_vars.indexOf(this.text);
+      if (index === -1) return this.text === model[1];
+      else return model_vars[index] === model[1];
+    } else return true;
+  }
+
   isMatchExact(model) {
     // The block and the contents of its slots must be of the same type.
     if (!(this instanceof model[0])) return false;
@@ -177,6 +220,18 @@ class Block {
     }
     // For variables and macro instances, they must also have the same name.
     return (!(this instanceof TermVar || this instanceof MacroUse) || this.text === model[1]);
+  }
+
+  isMatchShape(model) {
+    // If model contains a null, then that subterm is ignored.
+    if (model === null) return true;
+    // The block and the contents of its slots must be of the same type.
+    if (!(this instanceof model[0])) return false;
+    for (let i = 0; i < this.slots.length; ++i) {
+      if (!this.slots[i].isMatchShape(model[i+1])) return false;
+    }
+    // For variables and macro instances, this function ignores the name.
+    return true;
   }
 
   removeHighlight(){

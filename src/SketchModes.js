@@ -26,7 +26,8 @@ class Title extends Mode {
       let num = i+1;
       let x = floor(i/3)%5;
       let y = i%3;
-      this.questions[i] = new Button(250+150*x, 150+150*y, 100, 100, "Q"+num, 30);
+      this.questions[i] = new Button(250+150*x, 150+150*y, 100, 100, "Q"+num
+        +(question_data[i].text === "(dummy)"?"\n(dummy)":""), (question_data[i].text === "(dummy)"?20:30));
     }
     this.max_page = ceil(question_data.length/15)-1;
     this.question_next = new Button(1000, 300, 100, 100, ">", 40);
@@ -160,7 +161,7 @@ class QuizQuestion extends ModeWithCanvas {
 
   constructor(num) {
     let question = question_data[num];
-    super(new HeaderWithCanvas(60, "Q"+(num+1)+": "+question.text, 30, "Submit\nAnswer", 20));
+    super(new HeaderWithCanvas(60, "Q"+(num+1)+": "+question.text, question.text.includes("\n")?25:30, "Submit\nAnswer", 20));
     this.question_num = num;
     this.marking = question.marking;
     // Add in the ANS macro definition,
