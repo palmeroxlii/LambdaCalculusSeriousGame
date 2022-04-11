@@ -20,7 +20,7 @@ function expandMacrosCount(term) {
 
 function redexCheckNorm(term) {
   if (term instanceof TermApp) {
-    if (term.slots[0] instanceof TermAbs && term.slots[0].slots[0] instanceof TermVar) {
+    if (term.slots[0] instanceof TermAbs && term.slotPath([0, 0]) instanceof TermVar) {
       term.highlighted = true;
       term.slots[0].highlighted = true;
       return [];
@@ -43,7 +43,7 @@ function redexCheckAppl(term) {
     if (tmp !== null) {tmp.push(0); return tmp;}
     tmp = redexCheckNorm(term.slots[1]);
     if (tmp !== null) {tmp.push(1); return tmp;}
-    if (term.slots[0] instanceof TermAbs && term.slots[0].slots[0] instanceof TermVar) {
+    if (term.slots[0] instanceof TermAbs && term.slotPath([0, 0]) instanceof TermVar) {
       term.highlighted = true;
       term.slots[0].highlighted = true;
       return [];
@@ -205,8 +205,8 @@ function betaReduce(term, slides, state, strategy) {
   term = term.copyBlock();
   if (redex_path.length === 0) {
     // The entire term is the redex.
-    let vari = term.slots[0].slots[0].text;
-    let func = term.slots[0].slots[1];
+    let vari = term.slotPath([0,0]).text;
+    let func = term.slotPath([0,1]);
     let argu = term.slots[1];
     term = redexSubstitute(func, argu, vari);
   } else {
@@ -217,8 +217,8 @@ function betaReduce(term, slides, state, strategy) {
       parent = parent.slots[path.pop()];
     }
     redex = parent.slots[path[0]];
-    let vari = redex.slots[0].slots[0].text;
-    let func = redex.slots[0].slots[1];
+    let vari = redex.slotPath([0,0]).text;
+    let func = redex.slotPath([0,1]);
     let argu = redex.slots[1];
     parent.slots[path[0]] = redexSubstitute(func, argu, vari);
   }

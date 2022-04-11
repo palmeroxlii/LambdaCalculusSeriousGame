@@ -7,34 +7,45 @@ class Question {
     this.marking = marking; // A function that decides whether an answer is correct.
   }
 
-  static MCQ(text, ans, canvas, options, correct, hint) {
-    return new Question(text, ans, canvas.concat(Question.McqCanvas(options)), Question.McqMarking(options, correct, hint));
+  static MCQ(text, canvas, options, correct, hint) {
+    return new Question(text, null, canvas.concat(Question.McqCanvas(options)), Question.McqMarking(options, correct, hint));
   }
 
   static McqCanvas(options) {
     let canvas = [];
     textSize(30);
-    let width = [];
-    for (let i = 0; i < options.length; ++i) {
-      options[i] = char(65+i)+"  "+options[i];
-      width[i] = max(40, textWidth(options[i])+15);
-    }
-    let xpos = 600-(width.reduce((a, b) => a+b, 0)+(options.length-1)*20)/2;
-    for (let i = 0; i < options.length; ++i) {
-      canvas.push([[MacroDef, [MacroUse, options[i]], [TermVar, char(65+i)]], 0, -200]);
-      canvas.push([[MacroUse, options[i]], xpos, 475]);
-      xpos += width[i]+20;
+    let ypos = 475-(options.length-1)*50;
+    let letter = 65;
+    for (let j = 0; j < options.length; ++j) {
+      let row = options[j];
+      let width = [];
+      for (let i = 0; i < row.length; ++i) {
+        row[i] = char(letter++)+"  "+row[i];
+        width[i] = max(40, textWidth(row[i])+15);
+      }
+      let xpos = 600-(width.reduce((a, b) => a+b, 0)+(row.length-1)*20)/2;
+      for (let i = 0; i < row.length; ++i) {
+        canvas.push([[MacroDef, [MacroUse, row[i]], [TermVar, row[i].charAt()]], 0, -200]);
+        canvas.push([[MacroUse, row[i]], xpos, ypos]);
+        xpos += width[i]+20;
+      }
+      ypos += 50;
     }
     return canvas;
   }
 
   static McqMarking(options, correct, hint) {
-    options = options.map(s => s.charAt());
-    correct = char(65+correct);
+    let valid = [];
+    for (let row of options) {
+      for (let s of row) {
+        valid.push(s.charAt());
+      }
+    }
+    let ans = char(65+correct);
     return function (term) {
       if (term instanceof TermVar) {
-        if (term.text === correct) return "";
-        else if (options.indexOf(term.text) !== -1) return hint;
+        if (term.text === ans) return "";
+        else if (valid.indexOf(term.text) !== -1) return hint;
       }
       return "Please answer using one of the given macros.";
     }

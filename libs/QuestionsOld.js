@@ -1,4 +1,4 @@
-// These were the example questions used during development, and are not used in the final game.
+// These were the example questions used during development.
 // Note that this code may not be compatible with the current version of the program.
 
 // The first example question.

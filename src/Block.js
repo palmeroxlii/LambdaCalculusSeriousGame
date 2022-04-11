@@ -245,6 +245,11 @@ class Block {
     this.slots[i] = new EmptySlot(0, 0, this.slot_blueprints[i]);
   }
 
+  slotPath(path) {
+    if (path.length === 0) return this;
+    else return this.slots[path[0]].slotPath(path.slice(1));
+  }
+
   updateBlock() {
     this.updateSizeMaster();
     this.updatePosMaster();
