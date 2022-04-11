@@ -180,7 +180,7 @@ class Block {
     }
   }
 
-  isMatchAlpha(model, renamings, model_vars = [], term_vars = []) {
+  isMatchAlpha(model, renamings = {}, model_vars = [], term_vars = []) {
     // The block must be of the same type.
     if (!(this instanceof model[0])) return false;
     // If it's an alpha abstraction for a non-empty variable, then update the renamings.

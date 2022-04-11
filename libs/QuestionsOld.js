@@ -1,10 +1,6 @@
 // These were the example questions used during development, and are not used in the final game.
 // Note that this code may not be compatible with the current version of the program.
 
-for (let i = 0; i < 43; ++i) {
-  question_data[i] = new Question("(dummy)", null, [], function (term) { return ""; });
-}
-
 // The first example question.
 question_data[10] = new Question("Q11: Construct the term (λx.x z)(λy.z y)",
   null,

@@ -4,8 +4,8 @@ let canvas, header, palette, popup;
 
 function setup() {
   createCanvas(1200, 600);
-  angleMode(DEGREES);
   textAlign(CENTER, CENTER);
+  createQuestions()
   mouse = createVector(0, 0);
   mode = new Title();
 }
