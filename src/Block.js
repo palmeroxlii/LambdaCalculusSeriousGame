@@ -118,14 +118,12 @@ class Block {
   }
 
   countSubterms(model) {
-    if (this.isMatchExact(model)) return 1;
-    else {
-      let count = 0;
-      for (let slot of this.slots) {
-        count += slot.countSubterms(model);
-      }
-      return count;
+    let count = 0;
+    if (this.isMatchExact(model)) ++count;
+    for (let slot of this.slots) {
+      count += slot.countSubterms(model);
     }
+    return count;
   }
 
   display() {
@@ -181,6 +179,8 @@ class Block {
   }
 
   isMatchAlpha(model, renamings = {}, model_vars = [], term_vars = []) {
+    // If model contains a null, then that subterm is ignored.
+    if (model === null) return true;
     // The block must be of the same type.
     if (!(this instanceof model[0])) return false;
     // If it's an alpha abstraction for a non-empty variable, then update the renamings.
@@ -213,6 +213,8 @@ class Block {
   }
 
   isMatchExact(model) {
+    // If model contains a null, then that subterm is ignored.
+    if (model === null) return true;
     // The block and the contents of its slots must be of the same type.
     if (!(this instanceof model[0])) return false;
     for (let i = 0; i < this.slots.length; ++i) {

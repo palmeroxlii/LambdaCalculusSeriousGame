@@ -22,14 +22,16 @@ class Title extends Mode {
 
     this.quiz_header = new Header(60, "QUIZ MODE", 40);
     this.questions = [];
+    this.max_page = ceil(question_data.length/15)-1;
+    let last_page_offset = (5-ceil((question_data.length-this.max_page*15)/3))/2;
     for (let i = 0; i < question_data.length; ++i) {
       let num = i+1;
       let x = floor(i/3)%5;
+      if (floor(i/15) === this.max_page) x += last_page_offset;
       let y = i%3;
       this.questions[i] = new Button(250+150*x, 150+150*y, 100, 100, "Q"+num
         +(question_data[i].text === "(dummy)"?"\n(dummy)":""), (question_data[i].text === "(dummy)"?20:30));
     }
-    this.max_page = ceil(question_data.length/15)-1;
     this.question_next = new Button(1000, 300, 100, 100, ">", 40);
     this.question_prev = new Button(100, 300, 100, 100, "<", 40);
   }
