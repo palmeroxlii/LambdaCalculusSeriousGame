@@ -39,9 +39,9 @@ function redexCheckNorm(term) {
 
 function redexCheckAppl(term) {
   if (term instanceof TermApp) {
-    let tmp = redexCheckNorm(term.slots[0]);
+    let tmp = redexCheckAppl(term.slots[0]);
     if (tmp !== null) {tmp.push(0); return tmp;}
-    tmp = redexCheckNorm(term.slots[1]);
+    tmp = redexCheckAppl(term.slots[1]);
     if (tmp !== null) {tmp.push(1); return tmp;}
     if (term.slots[0] instanceof TermAbs && term.slotPath([0, 0]) instanceof TermVar) {
       term.highlighted = true;
@@ -50,7 +50,7 @@ function redexCheckAppl(term) {
     }
     return null;
   } else if (term instanceof TermAbs || term instanceof MacroDef) {
-    let tmp = redexCheckNorm(term.slots[1]);
+    let tmp = redexCheckAppl(term.slots[1]);
     if (tmp !== null) {tmp.push(1); return tmp;}
     return null;
   } else return null;

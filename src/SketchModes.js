@@ -170,10 +170,9 @@ class QuizQuestion extends ModeWithCanvas {
     //  as well as (depending on the question) a default answer,
     if (question.ans !== null) ans.slots[1] = this.block_construct(question.ans);
     ans.updateBlock();
-    if (ans.size.y > 225) {
-      ans.pos.y -= (ans.size.y-225);
-      ans.updateBlock();
-    }
+    if (ans.size.x > 655) ans.pos.x -= (ans.size.x-655);
+    if (ans.size.y > 225) ans.pos.y -= (ans.size.y-225);
+    ans.updateBlock();
     canvas.blocks.push(ans);
     // and any other blocks.
     for (let blueprint of question.canvas) {

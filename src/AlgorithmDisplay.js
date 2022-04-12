@@ -88,4 +88,13 @@ class AlgorithmDisplay extends Popup {
     if (this.header.topright.highlighted) popup = null;
   }
 
+  static runAlgorithm(term, limit = 10, alg_num = 0) {
+    let alg = new AlgorithmDisplay(term, algorithm_spec[alg_num]);
+    let steps;
+    for (steps = -1; steps < limit && !alg.terminated; ++steps) {
+      alg.applyStep();
+    }
+    return [alg.cur_term, alg.terminated, steps];
+  }
+
 }
