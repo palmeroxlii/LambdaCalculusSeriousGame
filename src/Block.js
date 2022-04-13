@@ -119,7 +119,7 @@ class Block {
 
   countSubterms(model) {
     let count = 0;
-    if (this.isMatchExact(model)) ++count;
+    if (this.isMatchPart(model)) ++count;
     for (let slot of this.slots) {
       count += slot.countSubterms(model);
     }
@@ -179,8 +179,8 @@ class Block {
   }
 
   isMatchAlpha(model, renamings = {}, model_vars = [], term_vars = []) {
-    // If model contains a null, then that subterm is ignored.
-    if (model === null) return true;
+    // If model contains a null, then that subterm must be an empty slot.
+    if (model === null) return this instanceof EmptySlot;
     // The block must be of the same type.
     if (!(this instanceof model[0])) return false;
     // If it's an alpha abstraction for a non-empty variable, then update the renamings.
@@ -213,8 +213,8 @@ class Block {
   }
 
   isMatchExact(model) {
-    // If model contains a null, then that subterm is ignored.
-    if (model === null) return true;
+    // If model contains a null, then that subterm must be an empty slot.
+    if (model === null) return this instanceof EmptySlot;
     // The block and the contents of its slots must be of the same type.
     if (!(this instanceof model[0])) return false;
     for (let i = 0; i < this.slots.length; ++i) {
@@ -224,9 +224,21 @@ class Block {
     return (!(this instanceof TermVar || this instanceof MacroUse) || this.text === model[1]);
   }
 
-  isMatchShape(model) {
+  isMatchPart(model) {
     // If model contains a null, then that subterm is ignored.
     if (model === null) return true;
+    // The block and the contents of its slots must be of the same type.
+    if (!(this instanceof model[0])) return false;
+    for (let i = 0; i < this.slots.length; ++i) {
+      if (!this.slots[i].isMatchPart(model[i+1])) return false;
+    }
+    // For variables and macro instances, they must also have the same name.
+    return (!(this instanceof TermVar || this instanceof MacroUse) || this.text === model[1]);
+  }
+
+  isMatchShape(model) {
+    // If model contains a null, then that subterm must be an empty slot.
+    if (model === null) return this instanceof EmptySlot;
     // The block and the contents of its slots must be of the same type.
     if (!(this instanceof model[0])) return false;
     for (let i = 0; i < this.slots.length; ++i) {

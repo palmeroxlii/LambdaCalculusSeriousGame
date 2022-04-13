@@ -16,7 +16,7 @@ In addition, this mode allows you to apply the beta-reduction algorithm (using e
 
 ## Playing the game - Quiz mode
 
-This mode allows you to test your knowledge of lambda calculus by answering several questions. Use the arrows on the sides to scroll through the questions, and select a question to attempt. Work out the answer, and then assign it to the ANS macro. When you submit an answer, the game will check whether it is correct; if your answer is incorrect, then the game will attempt to provide helpful feedback (e.g. if it can spot what mistake you made).
+This mode allows you to test your knowledge of lambda calculus by answering several questions. Use the arrows on the sides to scroll through the questions, and select a question to attempt. Work out the answer, and then assign it to the ANS macro (unless the question specifies a different method). When you submit an answer, the game will check whether it is correct; if your answer is incorrect, then the game will attempt to provide helpful feedback (e.g. if it can spot what mistake you made).
 
 ## Keyboard controls
 The majority of the game is played using just the mouse. However, renaming variables and macros is done by typing the name with a keyboard:

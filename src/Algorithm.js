@@ -99,7 +99,7 @@ class Algorithm extends Popup {
 
   static verify(answer, slot_path, model, solution, text, limit = 10, alg_num = 0) {
     // Construct the term.
-    let term = mode.block_construct(model);
+    let term = mode.blockConstruct(model);
     let slot_parent = term;
     for (let i = 0; i < slot_path.length-1; ++i) {
       slot_parent = slot_parent.slots[slot_path[i]];

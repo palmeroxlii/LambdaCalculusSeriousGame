@@ -170,7 +170,7 @@ class QuizQuestion extends ModeWithCanvas {
     let ans = new MacroDef(525, 275);
     ans.slots[0] = new MacroUse(0, 0, "ANS");
     //  as well as (depending on the question) a default answer,
-    if (question.ans !== null) ans.slots[1] = this.block_construct(question.ans);
+    if (question.ans !== null) ans.slots[1] = this.blockConstruct(question.ans);
     ans.updateBlock();
     if (ans.size.x > 655) ans.pos.x -= (ans.size.x-655);
     if (ans.size.y > 225) ans.pos.y -= (ans.size.y-225);
@@ -178,14 +178,14 @@ class QuizQuestion extends ModeWithCanvas {
     canvas.blocks.push(ans);
     // and any other blocks.
     for (let blueprint of question.canvas) {
-      let block = this.block_construct(blueprint[0]);
+      let block = this.blockConstruct(blueprint[0]);
       block.pos.set(blueprint[1], blueprint[2]);
       block.updateBlock();
       canvas.blocks.push(block);
     }
   }
 
-  block_construct(blueprint) {
+  blockConstruct(blueprint) {
     let block;
     let type = blueprint[0];
     switch (type) {
@@ -199,12 +199,28 @@ class QuizQuestion extends ModeWithCanvas {
       case MacroDef:
         block = new type(0, 0);
         for (let i = 1; i < blueprint.length; ++i) {
-          if (blueprint[i] !== null) block.slots[i-1] = this.block_construct(blueprint[i]);
+          if (blueprint[i] !== null) block.slots[i-1] = this.blockConstruct(blueprint[i]);
         }
         block.updateBlock();
         break;
     }
     return block;
+  }
+
+  blockDeconstruct(block, strict_app_type = false) {
+    if (block instanceof TermVar) return [TermVar, block.text];
+    else if (block instanceof TermAbs)
+      return [TermAbs, this.blockDeconstruct(block.slots[0], strict_app_type), this.blockDeconstruct(block.slots[1], strict_app_type)];
+    else if (strict_app_type && block instanceof TermApp)
+      return [TermApp, this.blockDeconstruct(block.slots[0], strict_app_type), this.blockDeconstruct(block.slots[1], strict_app_type)];
+    else if (block instanceof TermAppH)
+      return [TermAppH, this.blockDeconstruct(block.slots[0], strict_app_type), this.blockDeconstruct(block.slots[1], strict_app_type)];
+    else if (block instanceof TermAppV)
+      return [TermAppV, this.blockDeconstruct(block.slots[0], strict_app_type), this.blockDeconstruct(block.slots[1], strict_app_type)];
+    else if (block instanceof MacroDef)
+      return [MacroDef, this.blockDeconstruct(block.slots[0], strict_app_type), this.blockDeconstruct(block.slots[1], strict_app_type)];
+    else if (block instanceof MacroUse) return [MacroUse, block.text];
+    else return null;
   }
 
   mousePressed() {
