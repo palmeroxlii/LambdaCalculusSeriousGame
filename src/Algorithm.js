@@ -1,4 +1,4 @@
-class AlgorithmDisplay extends Popup {
+class Algorithm extends Popup {
 
   constructor(term, alg) {
     super();
@@ -88,13 +88,28 @@ class AlgorithmDisplay extends Popup {
     if (this.header.topright.highlighted) popup = null;
   }
 
-  static runAlgorithm(term, limit = 10, alg_num = 0) {
-    let alg = new AlgorithmDisplay(term, algorithm_spec[alg_num]);
+  static run(term, limit = 10, alg_num = 0) {
+    let alg = new Algorithm(term, algorithm_spec[alg_num]);
     let steps;
     for (steps = -1; steps < limit && !alg.terminated; ++steps) {
       alg.applyStep();
     }
     return [alg.cur_term, alg.terminated, steps];
+  }
+
+  static verify(answer, slot_path, model, solution, text, limit = 10, alg_num = 0) {
+    // Construct the term.
+    let term = mode.block_construct(model);
+    let slot_parent = term;
+    for (let i = 0; i < slot_path.length-1; ++i) {
+      slot_parent = slot_parent.slots[slot_path[i]];
+    }
+    slot_parent.slots[slot_path[slot_path.length-1]] = answer.copyBlock();
+    // Check the result.
+    let result = Algorithm.run(term, limit, alg_num);
+    if (!result[1]) return "Using your term, \""+text+"\"\ntakes too many steps to fully reduce,\nso the result cannot be verified.";
+    else if (result[0].isMatchAlpha(solution)) return "";
+    else return "Using your term, \""+text+"\"\nincorrectly reduces to the term:\n\""+result[0].toString()+"\"";
   }
 
 }

@@ -163,7 +163,7 @@ question_data[27] = new Question("Construct a term that fully beta-reduces (usin
   null,
   [],
   function (term) {
-    let result = AlgorithmDisplay.runAlgorithm(term);
+    let result = Algorithm.run(term);
     if (!result[1]) return "Your term fully reduces in more than 10 steps.";
     else {
       let steps = result[2];
@@ -178,7 +178,7 @@ question_data[28] = new Question("Construct a term that fully beta-reduces (usin
   null,
   [],
   function (term) {
-    let result = AlgorithmDisplay.runAlgorithm(term);
+    let result = Algorithm.run(term);
     if (!result[1]) return "Your term fully reduces in more than 10 steps.";
     else {
       let steps = result[2];
@@ -198,7 +198,7 @@ question_data[29] = new Question("Construct a term that fully beta-reduces (usin
   null,
   [],
   function (term) {
-    let result = AlgorithmDisplay.runAlgorithm(term);
+    let result = Algorithm.run(term);
     if (!result[1]) return "Your term fully reduces in more than 10 steps.";
     else {
       let steps = result[2];

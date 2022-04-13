@@ -6,7 +6,8 @@ question_data[0] = new Question("Fill in the three macros on the left with block
    [[MacroDef, [MacroUse, "ABSTRACTION"], null], 125, 275],
    [[MacroDef, [MacroUse, "APPLICATION"], null], 125, 375]],
   function (term) {
-    if (term.isMatchShape([TermAppV, [TermAppV, null, null], null])) {
+    let ans = canvas.searchMacro("ANS")[0];
+    if (ans.isMatchExact([TermAppV, [TermAppV, [MacroUse, "VARIABLE"], [MacroUse, "ABSTRACTION"]], [MacroUse, "APPLICATION"]])) {
       if (!(term.slotPath([0,0]) instanceof TermVar)) return "Double check the \"VARIABLE\" macro.";
       if (!(term.slotPath([0,1]) instanceof TermAbs)) return "Double check the \"ABSTRACTION\" macro.";
       if (!(term.slots[1] instanceof TermApp)) return "Double check the \"APPLICATION\" macro.";
@@ -57,7 +58,7 @@ question_data[4] = new Question("Construct the term \"λi.i j k\".",
 question_data[5] = new Question("Construct the term \"((λx.x)(λx.x))((λx.x)(λx.x))\",\nusing a macro to avoid repetition.",
   null,
   [],
-  function(term) {
+  function (term) {
     if (term.isMatchExact([TermApp, [TermApp, [TermAbs, [TermVar, "x"], [TermVar, "x"]], [TermAbs, [TermVar, "x"], [TermVar, "x"]]],
                                     [TermApp, [TermAbs, [TermVar, "x"], [TermVar, "x"]], [TermAbs, [TermVar, "x"], [TermVar, "x"]]]])){
       let ans = canvas.searchMacro("ANS")[0];
@@ -78,7 +79,7 @@ question_data[5] = new Question("Construct the term \"((λx.x)(λx.x))((λx.x)(�
 question_data[6] = new Question("Rename the \"x\" variable in the given term to a different variable.",
   [TermAbs, [TermVar, "x"], [TermVar, "x"]],
   [],
-  function(term) {
+  function (term) {
     let renamings = {};
     if (term.isMatchAlpha([TermAbs, [TermVar, "@0"], [TermVar, "@0"]], renamings)) {
       if (renamings["@0"] === "x") return "Technically, renaming \"x\" to \"x\" itself is a valid\noption. However, try renaming it to \"y\" instead.";
@@ -92,7 +93,7 @@ question_data[6] = new Question("Rename the \"x\" variable in the given term to 
 question_data[7] = new Question("Rename the \"x\" and \"y\" variables to two different variables.",
   [TermAppV, [TermAbs, [TermVar, "x"], [TermVar, "x"]], [TermAbs, [TermVar, "y"], [TermVar, "y"]]],
   [],
-  function(term) {
+  function (term) {
     let renamings = {};
     if (term.isMatchAlpha([TermApp, [TermAbs, [TermVar, "@0"], [TermVar, "@0"]],
       [TermAbs, [TermVar, "@1"], [TermVar, "@1"]]], renamings)) {
@@ -116,7 +117,7 @@ question_data[8] = new Question("Rename all possible variables to different vari
   [TermAbs, [TermVar, "x"], [TermAbs, [TermVar, "y"], [TermAbs, [TermVar, "z"],
     [TermAppH, [TermAppV, [TermVar, "x"], [TermVar, "y"]], [TermAppV, [TermVar, "w"], [TermVar, "z"]]]]]],
   [],
-  function(term) {
+  function (term) {
     let renamings = {};
     if (term.isMatchAlpha([TermAbs, [TermVar, "@0"], [TermAbs, [TermVar, "@1"], [TermAbs, [TermVar, "@2"],
       [TermAppH, [TermAppV, [TermVar, "@0"], [TermVar, "@1"]], [TermAppV, [TermVar, "w"], [TermVar, "@2"]]]]]], renamings)) {
@@ -185,7 +186,7 @@ question_data[11] = Question.MCQ("In the renaming of the binders in \"F\", which
 question_data[12] = new Question("Rename all possible variables to different variables.",
   [TermAppH, [TermAppH, [TermVar, "x"], [TermAbs, [TermVar, "x"], [TermVar, "x"]]], [TermVar, "x"]],
   [],
-  function(term) {
+  function (term) {
     let renamings = {};
     if (term.isMatchAlpha([TermAppH, [TermAppH, [TermVar, "x"], [TermAbs, [TermVar, "@0"], [TermVar, "@0"]]], [TermVar, "x"]], renamings)) {
       if (renamings["@0"] === "x") return "Rename \"x\" to a different variable.";
@@ -203,7 +204,7 @@ question_data[12] = new Question("Rename all possible variables to different var
 question_data[13] = new Question("Rename all possible variables to different variables.",
   [TermAbs, [TermVar, "x"], [TermAppH, [TermAppH, [TermVar, "x"], [TermAbs, [TermVar, "x"], [TermVar, "x"]]], [TermVar, "x"]]],
   [],
-  function(term) {
+  function (term) {
     let renamings = {};
     if (term.isMatchAlpha([TermAbs, [TermVar, "@0"],
       [TermAppH, [TermAppH, [TermVar, "@0"], [TermAbs, [TermVar, "@1"], [TermVar, "@1"]]], [TermVar, "@0"]]], renamings)) {
@@ -230,7 +231,7 @@ question_data[14] = new Question("Rename all possible variables to different var
     [TermAppV, [TermAppH, [TermVar, "x"], [TermAbs, [TermVar, "x"], [TermAppH, [TermVar, "x"], [TermVar, "x"]]]],
     [TermAppH, [TermAbs, [TermVar, "x"], [TermAppH, [TermVar, "x"], [TermVar, "x"]]], [TermVar, "x"]]]],
   [],
-  function(term) {
+  function (term) {
     let renamings = {};
     if (term.isMatchAlpha([TermAppV,
       [TermAppV, [TermAppH, [TermAppH, [TermVar, "x"], [TermAbs, [TermVar, "@0"], [TermVar, "@0"]]], [TermVar, "x"]],

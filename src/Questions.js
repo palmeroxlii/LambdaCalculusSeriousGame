@@ -61,8 +61,8 @@ class Question {
 let section_enders = [5, 14, 29];
 let question_data = [];
 
-function createQuestions() {
-  for (let i = 0; i < 39; ++i) {
+function createQuestions(dummies = 0) {
+  for (let i = 0; i < dummies; ++i) {
     question_data[i] = new Question("(dummy)", null, [], function (term) { return ""; });
   }
   qpage1();

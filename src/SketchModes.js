@@ -154,7 +154,7 @@ class Sandbox extends ModeWithCanvas {
   }
 
   toprightButtonPress() {
-    popup = new ApplyAlgorithm();
+    popup = new ApplyChoose();
   }
 
 }

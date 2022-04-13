@@ -163,7 +163,7 @@ class SubmitAnswer extends Popup {
 
 }
 
-class ApplyAlgorithm extends Popup {
+class ApplyChoose extends Popup {
 
   constructor() {
     super();
@@ -219,7 +219,7 @@ class ApplyAlgorithm extends Popup {
     if (canvas.blocks.length !== 0) {
       if (this.block === null) this.choose_block.mousePressed();
       else if (this.alg === null) this.choose_alg.mousePressed();
-      else if (this.confirm.highlighted) popup = new AlgorithmDisplay(this.block, this.alg);
+      else if (this.confirm.highlighted) popup = new Algorithm(this.block, this.alg);
     }
     if (this.header.topright.highlighted) {
       if (this.block === null) popup = null;
