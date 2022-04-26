@@ -1,4 +1,4 @@
-let key_ctrl = false, key_shift = false;
+let key_ctrl = false, key_shift = false, key_f2 = false;
 let mode, mouse;
 let canvas, header, palette, popup;
 
@@ -32,6 +32,11 @@ function keyPressed() {
     case SHIFT:
       key_shift = true;
       break;
+    case 113:
+      if (!key_f2) save(nf(year(),4)+"-"+nf(month(),2)+"-"+nf(day(),2)+
+        "-"+nf(hour(),2)+"-"+nf(minute(),2)+"-"+nf(second(),2)+".png");
+      key_f2 = true;
+      break;
   }
   mode.keyPressed();
 }
@@ -43,6 +48,10 @@ function keyReleased() {
       break;
     case SHIFT:
       key_shift = false;
+      break;
+    case 113:
+      key_f2 = false;
+      break;
   }
   mode.keyReleased();
 }

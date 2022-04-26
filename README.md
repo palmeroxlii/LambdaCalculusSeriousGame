@@ -24,9 +24,20 @@ The majority of the game is played using just the mouse. However, renaming varia
 - Only numbers, spaces and upper-case letters are accepted for macros.
 
 In addition, there are some more advanced controls that are assigned to keys:
-- Control - Changes which block or slot is highlighted:
-  - When multiple blocks are overlapping, by default the highest block is highlighted. Use Control to highlight the lowest block instead.
-  - When highlighting a child block within a parent block, by default the child block is highlighted. Use Control to highlight the parent block instead.
-  - When dragging a block, by default a compatible slot is highlighted. Use Control to not highlight any slots instead (and drop the block directly onto the canvas).
-- Shift - When clicking on a highlighted block, by default the block is dragged when clicked. Use Shift to duplicate the highlighted block instead.
-- Delete - Remove the highlighted block from the canvas, without dragging it back onto the palette.
+- Control - Changes which block or slot is highlighted in certain situations:
+  - When the mouse is over multiple overlapping blocks are overlapping:
+    - By default, the highest block is highlighted.
+    - With Control, the lowest block is highlighted.
+  - When the mouse is over a child block within a parent block:
+    - By default, the child block is highlighted.
+    - With Control, the parent block is highlighted.
+  - When dragging a block, and the mouse is over a compatible slot:
+    - By default, the slot is highlighted (so the block can be inserted into the slot).
+    - With Control, the slot is not highlighted (so the block can be dropped directly onto the canvas).
+- Shift - Changes what happens when clicking on a highlighted block:
+  - By default, the block is dragged (moving the block from its current position).
+  - With Shift, the block is duplicated (leaving the original block in its current position).
+- Delete - Allows blocks to be deleted more easily:
+  - By default, blocks are removed by dragging them and dropping them off of the canvas.
+  - With Delete, blocks are removed by highlighting them and pressing the Delete key.
+- F2 - Takes a screenshot of the game.
