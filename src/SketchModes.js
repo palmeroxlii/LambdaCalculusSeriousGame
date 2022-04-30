@@ -55,6 +55,23 @@ class Title extends Mode {
       for (let i = this.page*15; i < (this.page+1)*15; ++i) {
         if (i < this.questions.length) this.questions[i].display();
       }
+      textSize(30);
+      strokeWeight(2);
+      stroke("Black");
+      fill("Gainsboro");
+      switch (this.page) {
+        case 0:
+          text("The Basics", 250, 100, 275, 50);
+          text("Alpha-Conversion", 525, 100, 425, 50);
+          line(525, 100, 525, 550);
+          break;
+        case 1:
+          text("Beta-Reduction", 250, 100, 700, 50);
+          break;
+        case 2:
+          text("Church Numerals, Church Booleans, Y-Combinator", 250, 100, 700, 50);
+          break;
+      }
     }
   }
 
