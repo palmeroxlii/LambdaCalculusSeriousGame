@@ -249,7 +249,7 @@ question_data[14] = new Question("Rename all possible variables to different var
           if (values[i] === values[j]) return "Rename every case of \"x\" to a distinct variable.";
         }
       }
-      return "wip";
+      return "";
     } else if (term.isMatchShape([TermAppV,
       [TermAppV, [TermAppH, [TermAppH, [TermVar, "x"], [TermAbs, [TermVar, "@0"], [TermVar, "@0"]]], [TermVar, "x"]],
       [TermAbs, [TermVar, "@1"], [TermAppH, [TermAppH, [TermVar, "@1"], [TermAbs, [TermVar, "@2"], [TermVar, "@2"]]], [TermVar, "@1"]]]],
