@@ -41,3 +41,4 @@ In addition, there are some more advanced controls that are assigned to keys:
   - By default, blocks are removed by dragging them and dropping them off of the canvas.
   - With Delete, blocks are removed by highlighting them and pressing the Delete key.
 - F2 - Takes a screenshot of the game.
+- Backtick - Copies the current tooltip (e.g. a block that is being hovered over) to the clipboard.

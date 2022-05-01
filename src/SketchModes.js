@@ -138,6 +138,10 @@ class ModeWithCanvas extends Mode {
   keyPressed() {
     if (popup === null) {
       switch (keyCode) {
+        case 223: // The ` key
+          let s = header.tooltipGet();
+          if (s !== "") navigator.clipboard.writeText(s);
+          break;
         case DELETE:
           canvas.deleteKey();
           break;
