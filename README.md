@@ -4,7 +4,7 @@ This game is intended to aid computer science students in learning lambda calcul
 
 ## Starting the game
 This game is intended to be played on a computer with a mouse and keyboard.
-1. Download the files.
+1. Download the game. If the download is in the form of a ZIP file, then extract it.
 2. Open the `index.html` file in a web browser.
 3. Select the `SANDBOX MODE` or `QUIZ MODE` button.
 
@@ -39,6 +39,6 @@ In addition, there are some more advanced controls that are assigned to keys:
   - With Shift, the block is duplicated (leaving the original block in its current position).
 - Delete - Allows blocks to be deleted more easily:
   - By default, blocks are removed by dragging them and dropping them off of the canvas.
-  - With Delete, blocks are removed by highlighting them and pressing the Delete key.
+  - With Delete, blocks are also removed by highlighting them and pressing the Delete key.
 - F2 - Takes a screenshot of the game.
 - Backtick - Copies the current tooltip (e.g. a block that is being hovered over) to the clipboard.
